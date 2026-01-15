@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Email & Weather Checker</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #eef2ff;
+        text-align: center;
+        padding: 40px;
+    }
+    .box {
+        background: white;
+        padding: 25px;
+        width: 380px;
+        margin: auto;
+        border-radius: 10px;
+        box-shadow: 0 0 10px #ccc;
+    }
+    input {
+        width: 90%;
+        padding: 8px;
+        margin: 10px 0;
+    }
+    button {
+        padding: 8px 15px;
+        background: #4a6cf7;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    p {
+        font-weight: bold;
+    }
+</style>
+</head>
+
+<body>
+
+<!-- Email Reputation -->
+<div class="box">
+    <h2>Email Reputation Check</h2>
+    <input type="text" id="email" placeholder="Enter email">
+    <br>
+    <button onclick="checkEmail()">Check Email</button>
+    <p id="emailResult"></p>
+</div>
+
+<br><br>
+
+<!-- Weather -->
+<div class="box">
+    <h2>Weather Check</h2>
+    <input type="text" id="city" placeholder="Enter city">
+    <br>
+    <button onclick="checkWeather()">Get Weather</button>
+    <p id="weatherResult"></p>
+</div>
+
+<script>
+/* ================= EMAIL API ================= */
+function checkEmail() {
+    let email = document.getElementById("email").value;
+    let result = document.getElementById("emailResult");
+
+    if (email === "") {
+        result.innerHTML = "❌ Please enter an email";
+        result.style.color = "red";
+        return;
+    }
+
+    const emailApiKey = "391d4efaa0574ca19c2c5fe84863be8e";
+    const url = `https://emailreputation.abstractapi.com/v1/?api_key=${emailApiKey}&email=${email}`;
+
+    fetch(url)
+        .then(res => res.json())
+        .then(data => {
+if (data.email_deliverability.status === 'deliverable') {                result.innerHTML = "✅ Email is deliverable and safe";
+                result.style.color = "green";
+            } else {
+                result.innerHTML = "⚠️ Email may be risky or invalid";
+                result.style.color = "orange";
+            }
+        })
+        .catch(() => {
+            result.innerHTML = "❌ Error checking email";
+            result.style.color = "red";
+        });
+}
+
+/* ================= WEATHER API ================= */
+function checkWeather() {
+    let city = document.getElementById("city").value;
+    let result = document.getElementById("weatherResult");
+
+    if (city === "") {
+        result.innerHTML = "❌ Please enter a city";
+        result.style.color = "red";
+        return;
+    }
+
+    const weatherApiKey = "25175761847e47cd88c155840261501";
+    const url = `https://api.weatherapi.com/v1/current.json?key=${weatherApiKey}&q=${city}`;
+
+    fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            result.innerHTML =
+                `🌡️ Temperature: ${data.current.temp_c}°C<br>
+                 🌥️ Condition: ${data.current.condition.text}`;
+            result.style.color = "green";
+        })
+        .catch(() => {
+            result.innerHTML = "❌ City not found or API error";
+            result.style.color = "red";
+        });
+}
+</script>
+
+</body>
+</html>
